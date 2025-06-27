@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Удалить {{ book.title }} - Booksaw{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Подтверждение удаления
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if book.cover_image %}
+                            <img src="{{ book.cover_image.url }}" class="img-thumbnail mb-3" style="max-height: 200px;" alt="{{ book.title }}">
+                        {% endif %}
+                        <h5>{{ book.title }}</h5>
+                        <p class="text-muted">{{ book.author }}</p>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Внимание!</strong> Вы действительно хотите удалить эту книгу? 
+                        Это действие нельзя будет отменить. Все отзывы к этой книге также будут удалены.
+                    </div>
+                    
+                    <form method="post" class="d-flex gap-2 justify-content-center">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Да, удалить книгу
+                        </button>
+                        <a href="{% url 'book_detail' book.pk %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Отмена
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

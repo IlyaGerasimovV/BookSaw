@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавить книгу - Booksaw{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3>
+                        <i class="fas fa-plus"></i> Добавить новую книгу
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.title.id_for_label }}" class="form-label">Название книги *</label>
+                                    {{ form.title }}
+                                    {% if form.title.errors %}
+                                        <div class="text-danger">{{ form.title.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.author.id_for_label }}" class="form-label">Автор *</label>
+                                    {{ form.author }}
+                                    {% if form.author.errors %}
+                                        <div class="text-danger">{{ form.author.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Жанры *</label>
+                            <div class="row">
+                                {% for choice in form.genres %}
+                                <div class="col-md-4 col-sm-6">
+                                    <div class="form-check">
+                                        {{ choice.tag }}
+                                        <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                            {{ choice.choice_label }}
+                                        </label>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% if form.genres.errors %}
+                                <div class="text-danger">{{ form.genres.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.description.id_for_label }}" class="form-label">Описание *</label>
+                            {{ form.description }}
+                            <div class="form-text">Расскажите о книге, поделитесь впечатлениями</div>
+                            {% if form.description.errors %}
+                                <div class="text-danger">{{ form.description.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.cover_image.id_for_label }}" class="form-label">Обложка книги</label>
+                            {{ form.cover_image }}
+                            <div class="form-text">Загрузите изображение обложки (необязательно)</div>
+                            {% if form.cover_image.errors %}
+                                <div class="text-danger">{{ form.cover_image.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.book_file.id_for_label }}" class="form-label">Файл книги</label>
+                            {{ form.book_file }}
+                            <div class="form-text">Загрузите файл книги (PDF, EPUB, FB2, TXT, DOC, DOCX)</div>
+                            {% if form.book_file.errors %}
+                                <div class="text-danger">{{ form.book_file.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save"></i> Добавить книгу
+                            </button>
+                            <a href="{% url 'user_profile' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Отмена
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

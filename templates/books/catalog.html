@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}Каталог книг - Booksaw{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Фильтры -->
+            <div class="card">
+                <div class="card-header">
+                    <h5>Фильтры</h5>
+                </div>
+                <div class="card-body">
+                    <form method="get">
+                        <div class="mb-3">
+                            <label for="search" class="form-label">Поиск</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ search_query }}" placeholder="Название или автор">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="genre" class="form-label">Жанр</label>
+                            <select class="form-select" id="genre" name="genre">
+                                <option value="">Все жанры</option>
+                                {% for genre in genres %}
+                                    <option value="{{ genre.id }}" 
+                                            {% if selected_genre == genre.id %}selected{% endif %}>
+                                        {{ genre.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary w-100">Применить</button>
+                        <a href="{% url 'book_catalog' %}" class="btn btn-outline-secondary w-100 mt-2">Сбросить</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1>Каталог книг</h1>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'add_book' %}" class="btn btn-success">
+                        <i class="fas fa-plus"></i> Добавить книгу
+                    </a>
+                {% endif %}
+            </div>
+            
+            {% if page_obj %}
+                <div class="row">
+                    {% for book in page_obj %}
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100">
+                            {% if book.cover_image %}
+                                <img src="{{ book.cover_image.url }}" class="card-img-top" 
+                                     style="height: 200px; object-fit: cover;" alt="{{ book.title }}">
+                            {% else %}
+                                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" 
+                                     style="height: 200px;">
+                                    <i class="fas fa-book text-muted" style="font-size: 2rem;"></i>
+                                </div>
+                            {% endif %}
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ book.title }}</h5>
+                                <p class="card-text text-muted">{{ book.author }}</p>
+                                <p class="card-text flex-grow-1">{{ book.description|truncatewords:10 }}</p>
+                                
+                                <!-- Статус файла -->
+                                <div class="mb-2">
+                                    {% if book.book_file %}
+                                        <span class="badge bg-success">
+                                            <i class="fas fa-download"></i> Доступен для скачивания
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning">
+                                            <i class="fas fa-envelope"></i> Только по запросу
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <small class="text-muted">
+                                            <i class="fas fa-star text-warning"></i>
+                                            {{ book.average_rating|floatformat:1 }}
+                                        </small>
+                                        <small class="text-muted">{{ book.owner.username }}</small>
+                                    </div>
+                                    <a href="{% url 'book_detail' book.pk %}" class="btn btn-primary w-100">Подробнее</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Пагинация -->
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Навигация по страницам">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">Первая</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">Предыдущая</a>
+                            </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">Следующая</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}{% if selected_genre %}&genre={{ selected_genre }}{% endif %}">Последняя</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-book-open text-muted" style="font-size: 4rem;"></i>
+                    <h3 class="mt-3">Книги не найдены</h3>
+                    <p class="text-muted">Попробуйте изменить параметры поиска</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

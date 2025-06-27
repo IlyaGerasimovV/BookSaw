@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная - Booksaw{% endblock %}
+
+{% block content %}
+
+<!-- Герой секция -->
+<section class="bg-primary text-white py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 fw-bold mb-4">Добро пожаловать в Booksaw</h1>
+                <p class="lead mb-4"> Книжный сервис для безвозмездного обмена книгами. Поделитесь своими книгами с другими читателями и найдите новые интересные произведения совершенно бесплатно. </p>
+                <div class="d-flex gap-3">
+                    <a href="{% url 'book_catalog' %}" class="btn btn-light btn-lg">
+                        <i class="fas fa-book"></i> Перейти в каталог
+                    </a> {% if user.is_authenticated %}
+                    <a href="{% url 'add_book' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-plus"></i> Добавить книгу
+                    </a> {% else %}
+                    <a href="{% url 'register' %}" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-user-plus"></i> Регистрация
+                    </a> {% endif %}
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="fas fa-book-open" style="font-size: 200px; opacity: 0.3;"></i>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Статистика -->
+<section class="py-5">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <i class="fas fa-book text-primary" style="font-size: 3rem;"></i>
+                        <h3 class="mt-3">{{ total_books }}</h3>
+                        <p class="text-muted">Книг в каталоге</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <i class="fas fa-users text-success" style="font-size: 3rem;"></i>
+                        <h3 class="mt-3">{{ total_users }}</h3>
+                        <p class="text-muted">Пользователей</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body">
+                        <i class="fas fa-exchange-alt text-warning" style="font-size: 3rem;"></i>
+                        <h3 class="mt-3">Бесплатно</h3>
+                        <p class="text-muted">Обмен книгами</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- Последние книги -->
+{% if recent_books %}
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Недавно добавленные книги</h2>
+        <div class="row">
+            {% for book in recent_books %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card h-100 shadow-sm">
+                    {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" class="card-img-top" style="height: 250px; object-fit: cover;" alt="{{ book.title }}">
+                    {% else %}
+                    <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center" style="height: 250px;">
+                        <i class="fas fa-book text-white" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ book.title }}</h5>
+                        <p class="card-text text-muted">{{ book.author }}</p>
+                        <p class="card-text">{{ book.description|truncatewords:15 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted"> <i class="fas fa-star text-warning"></i> {{ book.average_rating|floatformat:1 }} </small>
+                            <a href="{% url 'book_detail' book.pk %}" class="btn btn-primary btn-sm">Подробнее</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'book_catalog' %}" class="btn btn-primary">Посмотреть все книги</a>
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
